@@ -1,7 +1,7 @@
 ```mermaid
 graph TD
     
-    browser --> server POST 302
+    browser --> server
     server-->browser
 ```
 
