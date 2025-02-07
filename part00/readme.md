@@ -1,8 +1,8 @@
 ```mermaid
-    browser ->> server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
-    activate server
-    server-->>browser: HTML document
-    deactivate server
+graph TD
+    
+    browser --> server: POST https://studies.cs.helsinki.fi/exampleapp/new_note;
+    server-->browser: HTML document;
 ```
 
 
