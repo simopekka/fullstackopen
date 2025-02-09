@@ -8,7 +8,7 @@ const StatisticLine = ({ text, value }) => {
         <td>{value}</td> 
       </tr>
     </tbody>
-    )
+  )
 }
 
 const Statistics = ({ good, neutral, bad }) => {
