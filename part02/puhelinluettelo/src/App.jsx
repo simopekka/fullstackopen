@@ -1,57 +1,16 @@
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
-
-
-const Filter = ({filter, filterInput}) => {
-  return (
-    <div>filter shown with
-      <input 
-          name="filter"
-          value={filter}
-          onChange={filterInput}
-      />
-    </div>
-  )
-}
-
-const PersonForm = ({addName, newName, handleInputChange}) => {
-  return (
-    <form onSubmit={addName}>
-      <div>name:<input name="name" value={newName.name} onChange={handleInputChange}/></div>
-      <div>number:<input name="number" value={newName.number} onChange={handleInputChange}/></div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
-
-const Persons = ({persons, filter, deletePerson}) => {
-  return (
-    <>
-      {persons.filter((person) =>
-        person.name.toUpperCase().includes(filter.toUpperCase()))
-        .map(person => 
-          <Person key={person.id} person={person} deletePerson={deletePerson}/> 
-      )}
-    </>
-  )
-}
-
-const Person = ({person, deletePerson}) => {
-  return (
-    <p key={person.id}>{person.name} {person.number}
-      <button onClick={() => deletePerson(person.id)}>delete</button> 
-    </p>
-  )
-}
+import Notification from './components/Notification'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
-  const [newName, setNewName] = useState({
-    name: '', number: ''
-  })
+  const [newName, setNewName] = useState({ name: '', number: '' })
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
+  const [status, setStatus] = useState(null)
 
   const hook = () => {
     console.log('effect')
@@ -82,6 +41,11 @@ const App = () => {
           .update(found.id, personObject)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== found.id ? person : returnedPerson))
+            setMessage(`Updated ${newName.name} phone number from ${found.number} to ${newName.number}`)
+            setStatus('success')
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       }
     } else {
@@ -89,6 +53,11 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setMessage(`Added ${newName.name}`)
+          setStatus('success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000) 
         })
     }
     setNewName({
@@ -105,23 +74,35 @@ const App = () => {
         .deletePerson(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setMessage(`Deleted ${person.name} ${person.number} from the phonebook`)
+          setStatus('success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setMessage(`Information of ${person.name} has already been removed from the server`)
+          setStatus('error')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setPersons(persons.filter(person => person.id !== id))
         })
     }
   }
 
   const handleInputChange = (event) => {
-    console.log(event.target.value)
     setNewName({...newName, [event.target.name]: event.target.value})
   }
 
   const filterInput = (event) => {
-    console.log(event.target.value)
     setFilter(event.target.value)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} status={status}/>
       <Filter filter={filter} filterInput={filterInput}/>
       <h2>Add a new</h2>
       <PersonForm addName={addName} newName={newName} handleInputChange={handleInputChange}/>
