@@ -1,9 +1,9 @@
+import axios from "axios"
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/'
 
 const getAll = () => {
-    return fetch(`${baseUrl}api/all`)
-        .then((response) => response.json())
-        .then((data) => data);
+    const request = axios.get(`${baseUrl}api/all`)
+    return request.then(response => response.data)
 }
 
 export default { getAll }
