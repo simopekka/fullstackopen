@@ -1,9 +1,10 @@
 import Country from './Country'
+import Show from "./Show"
 
-const Find = ({ countries, input }) => {
+const Find = ({ countries, input, handle }) => {
     const filtered = countries.filter((country) =>
         country.name.common.toUpperCase().includes(input.toUpperCase()))
-
+    
     if (filtered.length < 10 && filtered.length > 1) {
         console.log(filtered)
         return (
@@ -12,6 +13,7 @@ const Find = ({ countries, input }) => {
                     {filtered.map(country => 
                         <tr key={country.name.common}>
                             <td>{country.name.common}</td>
+                            <td><Show country={country.name.common} handle={handle}/></td>
                         </tr>
                     )}
                 </tbody>

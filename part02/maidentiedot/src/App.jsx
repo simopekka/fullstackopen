@@ -19,14 +19,14 @@ function App() {
   useEffect(hook, [])
 
   const handleSearch = (event) => {
+    console.log(event.target.value)
     setInput(event.target.value)
   }
-
 
   return (
     <>
       <Search handle={handleSearch}/>
-      <Find countries={countries} input={input}/>
+      <Find countries={countries} input={input} handle={handleSearch}/>
     </>
   )
 }
