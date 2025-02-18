@@ -4,8 +4,6 @@ Tässä repositoriossa on meikäläisen tehtäväpalautukset Helsingin yliopisto
 
 [link]: https://fullstackopen.com
 
-# Ohjeita
-
 Mikälin pullaat joitain kansioista, muista:
 
 ```
