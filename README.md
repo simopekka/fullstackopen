@@ -4,7 +4,7 @@ Tässä repositoriossa on meikäläisen tehtäväpalautukset Helsingin yliopisto
 
 [link]: https://fullstackopen.com
 
-Mikälin pullaat joitain kansioista, muista:
+Mikäli pullaat jotain kansioita, muista:
 
 ```
 rm -r node_modules && npm install
