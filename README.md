@@ -1,1 +1,13 @@
-# fullstackopen
+# Fullstackopen
+
+Tässä repositoriossa on meikäläisen tehtäväpalautukset Helsingin yliopiston [Fullstackopen][link]-kurssin tehtäviin
+
+[link]: https://fullstackopen.com
+
+# Ohjeita
+
+Mikälin pullaat joitain kansioista, muista:
+
+```
+rm -r node_modules && npm install
+```
