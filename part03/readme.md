@@ -1,4 +1,4 @@
-# &lt;Sovellus fly.iossa&gt;
+## Sovellus fly.iossa
 
 Linkki löytyy [täältä] tai kopiomalla:
 
