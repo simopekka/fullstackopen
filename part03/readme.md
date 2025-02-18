@@ -1,8 +1,8 @@
 ## Sovellus fly.iossa
 
-Linkki löytyy [täältä][täältä] tai kopiomalla:
+Linkki löytyy [täältä][link] tai kopiomalla:
 
-[täältä] : https://puhelinluettelosv.fly.dev/
+[link] : https://puhelinluettelosv.fly.dev/
 
 
 ```
