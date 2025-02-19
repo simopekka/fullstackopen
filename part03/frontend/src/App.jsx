@@ -43,10 +43,15 @@ const App = () => {
             setPersons(persons.map(person => person.id !== found.id ? person : returnedPerson))
             setMessage(`Updated ${newName.name} phone number from ${found.number} to ${newName.number}`)
             setStatus('success')
-            setTimeout(() => {
-              setMessage(null)
-            }, 5000)
           })
+          .catch(error => {
+            console.log(error.response.data)
+            setMessage(error.response.data.error)
+            setStatus('error')
+          })
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
       }
     } else {
       personService
@@ -55,10 +60,15 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setMessage(`Added ${newName.name}`)
           setStatus('success')
-          setTimeout(() => {
-            setMessage(null)
-          }, 5000) 
         })
+        .catch(error => {
+          console.log(error.response.data)
+          setMessage(error.response.data.error)
+          setStatus('error')
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000) 
     }
     setNewName({
       name: '', number: ''
