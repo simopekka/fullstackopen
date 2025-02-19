@@ -39,7 +39,7 @@ if (process.argv.length > 3 && process.argv.length != 4) {
     console.log('remember to add name and number!')
     process.exit(1)
 } else {
-    console.log('phonebook')
+    console.log('phonebook:')
     Person
         .find({})
         .then(result => {
