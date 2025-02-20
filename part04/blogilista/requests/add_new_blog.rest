@@ -1,0 +1,9 @@
+post http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+  "title": "test book",
+  "author": "unknown author",
+  "url": "www.fi",
+  "likes": 0
+}
