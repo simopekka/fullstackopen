@@ -8,7 +8,6 @@ const Blog = require('../models/blog')
 
 const api = supertest(app)
 
-
 beforeEach(async () => {
   await Blog.deleteMany({})
   let blogObject = new Blog(helper.initialBlogs[0])
@@ -38,11 +37,16 @@ describe('adding blogs', () => {
       url: 'test',
       likes: 7
     }
+
+    const loggedUser = await api
+      .post('/api/login')
+      .send(helper.testUser)
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${loggedUser._body.token}`)
       .send(newBlog)
       .expect(201)
-      .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
 
@@ -59,8 +63,14 @@ describe('adding blogs', () => {
       author: 'unknown tester',
       url: 'test',
     }
+
+    const loggedUser = await api
+      .post('/api/login')
+      .send(helper.testUser)
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${loggedUser._body.token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -85,10 +95,25 @@ describe('adding blogs', () => {
 
 describe('deletion of a blog', () => {
   test('blogs can be deleted', async () => {
-    const blogs = await helper.blogsInDb()
-    const blogToDelete = blogs[0]
+    const loggedUser = await api
+      .post('/api/login')
+      .send(helper.testUser)
+
+    const newBlog = {
+      title: 'test blog',
+      author: 'unknown tester',
+      url: 'test',
+      likes: 7
+    }
+    const addBlog = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${loggedUser._body.token}`)
+      .send(newBlog)
+      .expect(201)
+
     await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
+      .delete(`/api/blogs/${addBlog.body.id}`)
+      .set('Authorization', `Bearer ${loggedUser._body.token}`)
       .expect(204)
   })
 })
@@ -109,7 +134,6 @@ describe('blog updates', () => {
       .expect(200)
 
     const response = await api.get('/api/blogs')
-    console.log(response.body[0].likes)
     assert.strictEqual(updatedBlog.likes, (response.body[0]).likes)
   })
 })
