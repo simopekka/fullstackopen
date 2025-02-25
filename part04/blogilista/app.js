@@ -1,3 +1,4 @@
+const config = require('./utils/config')
 const express = require('express')
 require('express-async-errors')
 const app = express()
@@ -6,13 +7,20 @@ const loginRouter = require('./controllers/login')
 const blogsRouter = require('./controllers/blogs')
 const userRouter = require('./controllers/users')
 const middleware = require('./utils/middleware')
+const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 
-require('dotenv').config()
+mongoose.set('strictQuery', false)
 
-const mongoUrl = process.env.MONGODB_URI
-mongoose.connect(mongoUrl)
+logger.info('connecting to', config.MONGODB_URI)
 
+mongoose.connect(config.MONGODB_URI)
+  .then(() => {
+    logger.info('connected to MongoDB')
+  })
+  .catch((error) => {
+    logger.error('error connection to MongoDB:', error.message)
+  })
 
 
 app.use(cors())
@@ -22,7 +30,7 @@ app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
 
-app.use('/api/blogs', middleware.userExtrator, blogsRouter)
+app.use('/api/blogs', blogsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
 
