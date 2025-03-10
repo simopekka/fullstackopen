@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -16,10 +16,12 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [status, setStatus] = useState(null)
 
+  const blogFormRef = useRef()
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs( blogs.sort((a, b) => a.value - b.value) )
+    )
   }, [])
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -54,19 +56,13 @@ const App = () => {
       setStatus(null)
     }, 5000)
   }
-  const addNewBlog = async (event) => {
-    event.preventDefault()
-    console.log(newBlog)
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url
-    }
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlogs => {
         setBlogs(blogs.concat(returnedBlogs))
-        setMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+        setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
         setStatus('success')
       })
       .catch(error => {
@@ -80,14 +76,30 @@ const App = () => {
     setNewBlog({ title:'', author:'',url:''})
   }
 
+    const updateBlog = ( blog ) => {
+      console.log(blog)
+      const updatedBlog = {
+        user: blog.user,
+        author: blog.author,
+        title: blog.title,
+        likes: blog.likes + 1,
+        url: blog.url
+      }
+  
+      blogService
+        .update(blog.id, updatedBlog)
+        .then(returnedBlog => {
+          setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog))
+        })
+        .catch(error => {
+          console.log(error.response.data)
+        })
+    }
+
   const logOut = (event) =>{
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
-  }
-
-  const handleInputChange = (event) => {
-    setNewBlog({...newBlog, [event.target.name]: event.target.value})
   }
 
   const loginForm = () => {
@@ -97,11 +109,11 @@ const App = () => {
         <Notification message={message} status={status} />
 
         <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={(handleLogin)}
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={(handleLogin)}
         />
       </>
     )
@@ -115,12 +127,12 @@ const App = () => {
         <p>{user.name} logged in
           <button onClick={logOut}>log out</button>
         </p>
-        <Togglable buttonLabel="Create new blog">
+        <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
           <h2>create new</h2>
-          <BlogForm addNewBlog={addNewBlog} newBlog={newBlog} handleInputChange={handleInputChange} />
+          <BlogForm createBlog={addBlog} />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
         )}
       </>
     )
