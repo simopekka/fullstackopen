@@ -12,7 +12,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({ title:'', author:'',url:''})
+  const [newBlog, setNewBlog] = useState({ title:'', author:'',url:'' })
   const [message, setMessage] = useState(null)
   const [status, setStatus] = useState(null)
 
@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password
@@ -47,12 +47,12 @@ const App = () => {
       setMessage(`Hello ${user.name}`)
       setStatus('success')
     } catch (exception) {
-      setMessage(`Wrong username or password`)
+      setMessage('Wrong username or password')
       setStatus('error')
     }
     setUsername('')
     setPassword('')
-    setTimeout(() =>{
+    setTimeout(() => {
       setMessage(null)
       setStatus(null)
     }, 5000)
@@ -71,34 +71,55 @@ const App = () => {
         setMessage(error.message)
         setStatus('error')
       })
-      setTimeout(() =>{
-        setMessage(null)
-        setStatus(null)
-      }, 5000)
-    setNewBlog({ title:'', author:'',url:''})
+    setTimeout(() => {
+      setMessage(null)
+      setStatus(null)
+    }, 5000)
+    setNewBlog({ title:'', author:'',url:'' })
   }
 
-    const updateBlog = ( blog ) => {
-      console.log(blog)
-      const updatedBlog = {
-        user: blog.user,
-        author: blog.author,
-        title: blog.title,
-        likes: blog.likes + 1,
-        url: blog.url
-      }
-
-      blogService
-        .update(blog.id, updatedBlog)
-        .then(returnedBlog => {
-          setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog))
-        })
-        .catch(error => {
-          console.log(error.response.data)
-        })
+  const updateBlog = ( blog ) => {
+    console.log(blog)
+    const updatedBlog = {
+      user: blog.user,
+      author: blog.author,
+      title: blog.title,
+      likes: blog.likes + 1,
+      url: blog.url
     }
 
-  const logOut = (event) =>{
+    blogService
+      .update(blog.id, updatedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog))
+      })
+      .catch(error => {
+        console.log(error.response.data)
+      })
+  }
+
+  const deleteBlog =  id  => {
+    const blog = blogs.find(blog => blog.id === id)
+    const confirm = window.confirm(`Delete ${blog.title}?`)
+    if (confirm) {
+      blogService
+        .deleteBlog(id)
+        .then(() => {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+          setMessage(`Deleted ${blog.title}`)
+          setStatus('success')
+        })
+        .catch(error => {
+          setMessage(error.message)
+          setStatus('error')
+        })
+    }
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
+  }
+
+  const logOut = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
@@ -134,7 +155,7 @@ const App = () => {
           <BlogForm createBlog={addBlog} />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog}/>
         )}
       </>
     )
