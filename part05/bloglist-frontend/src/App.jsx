@@ -20,9 +20,10 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort((a, b) => a.value - b.value) )
-    )
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+    )  
   }, [])
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
@@ -56,6 +57,7 @@ const App = () => {
       setStatus(null)
     }, 5000)
   }
+
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
     blogService
@@ -85,7 +87,7 @@ const App = () => {
         likes: blog.likes + 1,
         url: blog.url
       }
-  
+
       blogService
         .update(blog.id, updatedBlog)
         .then(returnedBlog => {
