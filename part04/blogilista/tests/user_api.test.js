@@ -21,7 +21,7 @@ describe('when there is initially one user at db', () => {
     await blogObject.save()
 
     const passwordHash = await bcrypt.hash('secret', 10)
-    const userObject = new User({ username: 'root', passwordHash })
+    const userObject = new User({ username: 'root', passwordHash, name: 'test user' })
 
     await userObject.save()
   })

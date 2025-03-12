@@ -27,6 +27,7 @@ const usersInDb = async () => {
 
 const testUser = {
   username: 'root',
+  name: 'test user',
   password: 'secret'
 }
 
