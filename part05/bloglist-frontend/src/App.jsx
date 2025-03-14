@@ -94,7 +94,7 @@ const App = () => {
         setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog))
       })
       .catch(error => {
-        console.log(error.response.data)
+        console.log(error.message)
       })
   }
 
