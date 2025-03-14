@@ -28,7 +28,7 @@ test('renders blog title', () => {
 })
 
 test('renders also author, likes and url when view button is pressed', async () => {
-  
+
   render(<Blog blog={blog} updateBlog={null} deleteBlog={null} user={testUser}/>)
   const user = userEvent.setup()
   const button = screen.getByText('view')
@@ -39,7 +39,7 @@ test('renders also author, likes and url when view button is pressed', async () 
 })
 
 test('if like-button is pressed twice, function UpdateBlog gets is twice', async () => {
-  
+
   const mockHandler = vi.fn()
   render(<Blog blog={blog} updateBlog={mockHandler} deleteBlog={null} user={testUser}/>)
 
