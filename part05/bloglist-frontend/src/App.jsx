@@ -12,7 +12,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({ title:'', author:'',url:'' })
   const [message, setMessage] = useState(null)
   const [status, setStatus] = useState(null)
 
@@ -20,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+      setBlogs(sortBlogs(blogs.sort((a, b) => b.likes - a.likes)))
     )
   }, [])
 
@@ -58,65 +57,62 @@ const App = () => {
     }, 5000)
   }
 
-  const addBlog = (blogObject) => {
+  const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    blogService
-      .create(blogObject)
-      .then(returnedBlogs => {
-        setBlogs(blogs.concat(returnedBlogs))
-        setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
-        setStatus('success')
-      })
-      .catch(error => {
-        setMessage(error.message)
-        setStatus('error')
-      })
+    try {
+      const addedBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(addedBlog))
+      setMessage(`a new blog ${addedBlog.title} by ${addedBlog.author} added`)
+      setStatus('success')
+      console.log(addedBlog)
+    } catch (error) {
+      setMessage(error.message)
+      setStatus('error')
+    }
     setTimeout(() => {
       setMessage(null)
       setStatus(null)
     }, 5000)
-    setNewBlog({ title:'', author:'',url:'' })
   }
 
-  const updateBlog = ( blog ) => {
-    console.log(blog)
+  const updateBlog = async ( blog ) => {
     const updatedBlog = {
       user: blog.user,
       author: blog.author,
       title: blog.title,
       likes: blog.likes + 1,
-      url: blog.url
+      url: blog.url,
+      id: blog.id
     }
-
-    blogService
-      .update(blog.id, updatedBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog))
-      })
-      .catch(error => {
-        console.log(error.message)
-      })
+    try {
+      const returnedBlog = await blogService.update(updatedBlog)
+      setBlogs(sortBlogs(blogs.map(blog => blog.id !== returnedBlog.id ? blog :returnedBlog)))
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
-  const deleteBlog =  id  => {
+  const deleteBlog =  async (id)  => {
     const blog = blogs.find(blog => blog.id === id)
     const confirm = window.confirm(`Delete ${blog.title}?`)
     if (confirm) {
-      blogService
-        .deleteBlog(id)
-        .then(() => {
-          setBlogs(blogs.filter(blog => blog.id !== id))
-          setMessage(`Deleted ${blog.title}`)
-          setStatus('success')
-        })
-        .catch(error => {
-          setMessage(error.message)
-          setStatus('error')
-        })
+      try {
+        await blogService.deleteBlog(id)
+        setBlogs(blogs.filter(blog => blog.id !== id))
+        setMessage(`Deleted ${blog.title}`)
+        setStatus('success')
+      } catch (error) {
+        setMessage(error.message)
+        setStatus('error')
+      }
     }
     setTimeout(() => {
       setMessage(null)
     }, 5000)
+  }
+
+  const sortBlogs = (blogs) => {
+    return blogs.sort((a, b) => b.likes - a.likes)
   }
 
   const logOut = (event) => {
@@ -130,7 +126,6 @@ const App = () => {
       <>
         <h2>Log in to application</h2>
         <Notification message={message} status={status} />
-
         <LoginForm
           username={username}
           password={password}
