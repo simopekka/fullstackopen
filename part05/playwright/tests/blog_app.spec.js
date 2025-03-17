@@ -48,7 +48,8 @@ describe('When logged in', () => {
     await expect(page.getByText('Create new blog')).toBeVisible()
     await createBlog(page, 'testi blogi', 'author', 'www.fi')
 
-    await expect(page.getByText('testi blogiview')).toBeVisible()
+    const locator = await page.getByTestId('blogs')
+    await expect(locator.getByText('testi blogi')).toBeVisible()
 
   })
 
@@ -62,31 +63,51 @@ describe('When logged in', () => {
   test('user can delete blogs', async ({ page }) => {
     await page.getByRole('button', {name: 'view'}).click()
     await expect(page.getByText('remove')).toBeVisible()
+    const locator = await page.getByTestId('blogs')
     page.on('dialog', async dialog => {
       await dialog.accept()
     })
     await page.getByRole('button', {name: 'remove'}).click()
-    await expect(page.getByText('testi blogiview')).not.toBeVisible()
+    await expect(locator.getByText('testi blogi')).not.toBeVisible()
   })
 })
 
-describe('Handling other user blogs', () => {
+describe('Handling multiple blogs', () => {
   beforeEach(async ({ page, request }) => {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
+      data: {
+        name: 'Matti Luukkainen',
+        username: 'mluukkai',
+        password: 'salainen'
+      }
+    })
     await request.post('/api/users', {
       data: {
         name: 'test user',
-        username: 'tuser',
+        username: 'user',
         password: 'salainen'
       }
     })
     await page.goto('/')
     await loginWith(page, 'mluukkai', 'salainen')
-    await createBlog(page, 'testi blogi', 'author', 'www.fi')
+    await createBlog(page, 'first', 'author', 'www.fi')
+    await createBlog(page, 'second', 'author', 'www.fi')
+    await createBlog(page, 'third', 'author', 'www.fi')
     await page.getByRole('button', {name: 'log out'}).click()
   })
+
   test('user cant remove other users blogs', async ({ page }) => {
-    await loginWith(page, 'tuser', 'salainen')
-    await page.getByRole('button', {name: 'view'}).click()
+    await loginWith(page, 'user', 'salainen')
+    await page.getByRole('button', {name: 'view'}).last().click()
     await expect(page.getByText('remove')).not.toBeVisible()
+  })
+
+  test('top liked blog is shown first', async ({ page }) => {
+    await loginWith(page, 'user', 'salainen')
+    await page.getByRole('button', {name: 'view'}).last().click()
+    await page.getByRole('button', {name: 'like'}).click()
+    const locator = page.getByTestId('blog').first()
+    await expect(locator.getByText('third')).toBeVisible()
   })
 })
