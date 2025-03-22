@@ -4,8 +4,5 @@ Tässä repositoriossa on meikäläisen tehtäväpalautukset Helsingin yliopisto
 
 [link]: https://fullstackopen.com
 
-Mikäli pullaat jotain kansioita, muista:
 
-```
-rm -r node_modules && npm install
-```
+![Full Stack Open core course Certificate](./certificates/certificate-fullstack.png)
