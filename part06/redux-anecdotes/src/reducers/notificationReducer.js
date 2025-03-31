@@ -15,11 +15,13 @@ const notificationSlice = createSlice ({
 
 export const { setMessage, clearMessage } = notificationSlice.actions
 
-export const setTemporaryMessage = (message) => (dispatch) => {
-  dispatch(setMessage(message))
-  setTimeout(() => {
-    dispatch(clearMessage())
-  }, 5000)
+export const setTemporaryMessage = (message, length) => {
+  return async dispatch => {
+    dispatch(setMessage(message))
+    setTimeout(() => {
+      dispatch(clearMessage())
+    }, length * 500)
+  }
 }
 
 export default notificationSlice.reducer
