@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Routes, Router, Route, useMatch, useNavigate } from 'react-router-dom'
+import { Link, Routes, Route, useMatch, useNavigate } from 'react-router-dom'
 
 const Menu = () => {
   const padding = {
@@ -20,8 +20,7 @@ const Anecdote = ({ anecdote }) => {
       <h2>{anecdote.content}</h2>
       <p>has {anecdote.votes} votes</p>
       <p>for more info see <a href={anecdote.info}>{anecdote.info}</a></p>
-
-      </div>
+    </div>
   )
 }
 
@@ -29,8 +28,11 @@ const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >
-        <Link to={`anecdotes/${anecdote.id}`}>{anecdote.content}</Link></li>)}
+      {anecdotes.map(anecdote =>
+        <li key={anecdote.id} >
+          <Link to={`anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
+      )}
     </ul>
   </div>
 )
@@ -43,7 +45,7 @@ const About = () => (
     <em>An anecdote is a brief, revealing account of an individual person or an incident.
       Occasionally humorous, anecdotes differ from jokes because their primary purpose is not simply to provoke laughter but to reveal a truth more general than the brief tale itself,
       such as to characterize a person by delineating a specific quirk or trait, to communicate an abstract idea about a person, place, or thing through the concrete details of a short narrative.
-      An anecdote is "a story with a point."</em>
+      An anecdote is &quot;a story with a point.&quot;</em>
 
     <p>Software engineering is full of excellent anecdotes, at this app you can find the best and add more.</p>
   </div>
